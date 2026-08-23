@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090909">
+<meta name="description" content="منيو مطعم نسيم الشام - اطلب أونلاين عبر واتساب">
+<title>نسيم الشام | المنيو والطلبات</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:Cairo,sans-serif;background:#090909;color:#f5f5f5}
+:root{--red:#e52323;--gold:#f0c75e;--line:rgba(255,255,255,.09)}
+.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{scrollbar-width:none}
+.glass{background:rgba(20,20,20,.82);backdrop-filter:blur(16px);border:1px solid var(--line)}
+.gold{color:var(--gold)}
+.section-title{display:flex;align-items:center;gap:12px;font-weight:900;font-size:1.55rem}
+.section-title:before{content:"";width:5px;height:36px;background:linear-gradient(#e52323,#f0c75e);border-radius:99px}
+.item-card{background:linear-gradient(145deg,#181818,#111);border:1px solid var(--line);transition:.25s}
+.item-card:hover{transform:translateY(-3px);border-color:rgba(240,199,94,.45);box-shadow:0 16px 40px rgba(0,0,0,.25)}
+.btn-red{background:linear-gradient(135deg,#ef2929,#a90f0f)}.btn-gold{background:linear-gradient(135deg,#f7d979,#c99b2c);color:#151515}
+.hero{background:radial-gradient(circle at 50% 0,rgba(229,35,35,.28),transparent 42%),linear-gradient(180deg,#151515,#080808)}
+.badge{border:1px solid rgba(240,199,94,.25);background:rgba(240,199,94,.08);color:var(--gold)}
+.cart-drawer{transform:translateX(110%);transition:.3s}.cart-drawer.open{transform:translateX(0)}
+.overlay{opacity:0;pointer-events:none;transition:.25s}.overlay.open{opacity:1;pointer-events:auto}
+.qty button{width:30px;height:30px;border-radius:9px;background:#292929}
+.size-box{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:16px;padding:12px;margin-top:12px}
+.size-title{font-size:12px;font-weight:900;color:#aaa;margin-bottom:8px}.size-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.size-option{border:1px solid rgba(255,255,255,.1);background:#0d0d0d;border-radius:12px;padding:10px;text-align:center;cursor:pointer;transition:.2s}
+.size-option:hover{border-color:rgba(240,199,94,.5)}.size-option.active{border-color:var(--gold);background:rgba(240,199,94,.12)}
+.size-name{font-size:12px;font-weight:900}.size-price{font-size:13px;color:var(--gold);font-weight:900;margin-top:2px}
+.toast{transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translateY(0);opacity:1}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#333;border-radius:99px}
+</style>
+</head>
+<body class="pb-24">
+
+<header class="hero border-b border-white/10">
+<div class="max-w-7xl mx-auto px-4 py-9 md:py-14 text-center">
+<div class="inline-flex items-center gap-2 badge rounded-full px-4 py-2 text-xs font-bold"><i class="fa-solid fa-fire-flame-curved"></i>طعم يستحق الانتظار</div>
+<h1 class="text-4xl md:text-6xl font-black mt-4">نسيم الشام</h1>
+<p class="text-gray-300 mt-2 text-sm md:text-base">المينيو الكامل • اطلب أونلاين واستلم طلبك بسهولة</p>
+<div class="flex flex-wrap justify-center gap-3 mt-6">
+<a href="https://wa.me/201064262660" target="_blank" rel="noopener" class="btn-red rounded-2xl px-5 py-3 font-extrabold shadow-lg"><i class="fa-brands fa-whatsapp ml-2"></i>واتساب</a>
+<a href="tel:01080072709" class="bg-white text-black rounded-2xl px-5 py-3 font-extrabold"><i class="fa-solid fa-phone ml-2"></i>اتصال</a>
+<button onclick="openCart()" class="btn-gold rounded-2xl px-5 py-3 font-extrabold"><i class="fa-solid fa-basket-shopping ml-2"></i>راجع الطلب <span id="cartCount">(0)</span></button>
+</div>
+<div class="mt-6 text-xs text-gray-400 space-y-1">
+<div><i class="fa-solid fa-location-dot gold ml-1"></i>مطوبس - شارع بورسعيد - أول شارع سيدي عامر</div>
+<div><i class="fa-solid fa-phone gold ml-1"></i>01080072709 • 01029527017 • <i class="fa-brands fa-whatsapp text-green-400"></i> 01064262660</div>
+</div>
+</div>
+</header>
+
+<nav class="sticky top-0 z-40 glass px-3 py-3"><div id="nav" class="max-w-7xl mx-auto flex gap-2 overflow-x-auto no-scrollbar"></div></nav>
+
+<main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
+<section id="offers" class="scroll-mt-28">
+<div class="glass rounded-3xl p-6 md:p-8 border-dashed border-2 border-yellow-500/30">
+<div class="flex items-center justify-between gap-4"><div><h2 class="section-title">العروض</h2><p class="text-gray-400 text-sm mt-2">العروض المميزة ستظهر هنا.</p></div><span class="badge rounded-full px-3 py-2 text-xs font-bold">قريبًا</span></div>
+<div class="mt-5 rounded-2xl bg-black/30 p-6 text-center text-gray-500"><i class="fa-solid fa-tags text-3xl mb-3"></i><p>لا توجد عروض مضافة حاليًا</p></div>
+</div></section>
+<div id="menuSections" class="space-y-12"></div>
+<section id="contact" class="scroll-mt-28">
+<div class="glass rounded-3xl p-6 md:p-8"><h2 class="section-title">تواصل معنا</h2>
+<div class="grid md:grid-cols-3 gap-4 mt-6">
+<a href="https://wa.me/201064262660" target="_blank" rel="noopener" class="item-card rounded-2xl p-5 flex items-center gap-4"><i class="fa-brands fa-whatsapp text-3xl text-green-400"></i><div><b>واتساب</b><p class="text-xs text-gray-400">01064262660</p></div></a>
+<a href="tel:01080072709" class="item-card rounded-2xl p-5 flex items-center gap-4"><i class="fa-solid fa-phone text-2xl text-red-400"></i><div><b>المكالمة الأولى</b><p class="text-xs text-gray-400">01080072709</p></div></a>
+<a href="tel:01029527017" class="item-card rounded-2xl p-5 flex items-center gap-4"><i class="fa-solid fa-phone text-2xl text-red-400"></i><div><b>المكالمة الثانية</b><p class="text-xs text-gray-400">01029527017</p></div></a>
+</div>
+<div class="mt-5 rounded-2xl bg-black/30 p-5 text-center"><i class="fa-solid fa-location-dot gold text-xl"></i><p class="mt-2">مطوبس - شارع بورسعيد - أول شارع سيدي عامر</p></div>
+</div></section>
+</main>
+
+<div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-auto z-40 flex gap-2">
+<button onclick="openCart()" class="order-now-btn btn-gold rounded-2xl px-5 py-3 font-black shadow-2xl"><i class="fa-solid fa-basket-shopping ml-2"></i>الطلب <span id="floatingCount">0</span></button>
+<a href="https://wa.me/201064262660" target="_blank" rel="noopener" class="bg-green-600 hover:bg-green-500 rounded-2xl px-5 py-3 font-black shadow-2xl"><i class="fa-brands fa-whatsapp ml-2"></i>واتساب</a>
+</div>
+
+<div id="overlay" class="overlay fixed inset-0 bg-black/70 z-50" onclick="closeCart()"></div>
+<aside id="cartDrawer" class="cart-drawer fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#111] z-[60] border-l border-white/10 flex flex-col">
+<div class="p-5 border-b border-white/10 flex items-center justify-between"><div><h2 class="text-xl font-black">سلة المشتريات</h2><p class="text-xs text-gray-500">راجع طلبك قبل الإرسال</p></div><button onclick="closeCart()" class="w-10 h-10 rounded-xl bg-white/5"><i class="fa-solid fa-xmark"></i></button></div>
+<div class="px-4 pt-4"><button onclick="sendOrder()" class="order-now-btn w-full bg-green-600 hover:bg-green-500 rounded-2xl py-3 font-black shadow-lg"><i class="fa-brands fa-whatsapp ml-2"></i>اطلب الآن — إرسال الطلب كله مرة واحدة</button></div>
+<div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+<div class="border-t border-white/10 p-4 space-y-3">
+<div class="flex justify-between text-lg font-black"><span>الإجمالي</span><span id="cartTotal" class="gold">0 ج.م</span></div>
+<input id="customerName" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="اسم العميل (اختياري)">
+<input id="customerPhone" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="رقم الهاتف (اختياري)" inputmode="tel">
+<textarea id="customerAddress" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none" rows="2" placeholder="العنوان / ملاحظات الطلب"></textarea>
+<button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-500 rounded-xl py-3 font-black"><i class="fa-brands fa-whatsapp ml-2"></i>إرسال الطلب على واتساب</button>
+<button onclick="clearCart()" class="w-full bg-white/5 rounded-xl py-2 text-sm text-gray-400">تفريغ السلة</button>
+</div></aside>
+
+<div id="toast" class="toast fixed bottom-24 left-1/2 -translate-x-1/2 z-[80] bg-white text-black rounded-2xl px-5 py-3 font-bold shadow-2xl"></div>
+
+<script>
+const menu=[
+{id:'trays',title:'قسم الصواني',icon:'fa-layer-group',items:[
+['صينية المعلم',385,'ربع ورك + قطعة كرسبي + أرز + 2 ثومية + مخلل'],
+['صينية ملوك الجدعنة',595,'ربع فراخ + ربع كفتة + قطعة زنجر + 2 أرز + بطاطس + عيش'],
+['صينية اسطنبول - 4 أفراد',370,'كفتة لحم + كفتة فراخ + شيش طاووق + كفتة محشية + بطاطس'],
+['صينية اسطنبول - 6 أفراد',730,'فرخة + 2 ورك + ربع صدر + 2 كفتة + 2 شيش + بطاطس'],
+['صينية نسيم الشام العائلية - 10 أفراد',1200,'تشكيلة عائلية كبيرة من المشاوي والدجاج مع الأرز والسلطات والإضافات']]},
+{id:'western',title:'وجبات الغربي',icon:'fa-utensils',items:[
+['وجبة كرسبي',130,'3 قطع كرسبي + أرز + بطاطس + كول سلو + ثومية + مخلل + عيش'],
+['وجبة زنجر',130,'3 قطع زنجر + أرز + بطاطس + كول سلو + ثومية + مخلل + عيش'],
+['وجبة اسكالوب',130,'3 قطع اسكالوب + أرز + بطاطس + كول سلو + ثومية + مخلل + عيش'],
+['وجبة بانيه',120,'بانيه + أرز + بطاطس + كول سلو + ثومية + مخلل + عيش'],
+['وجبة فرايد تشكن 3 قطع',130,'3 قطع دجاج + بطاطس + ثومية + مخلل + عيش'],
+['وجبة نسيم الشام',195,'شيش + كرسبي + بانيه + شاورما + أرز + بطاطس + ثومية + مخلل + عيش'],
+['وجبة تشكن رول 3 قطع',140,'3 قطع تشكن رول + بطاطس + صوص + مخلل + عيش']]},
+{id:'western-sides',title:'قسم الغربي - إضافات',icon:'fa-bowl-food',items:[
+['بطاطس سوري سادة',25,'بطاطس سوري سادة'],['بطاطس سوري جبنة',35,'بطاطس سوري مع الجبنة'],['بطاطس شيدر','40 / 45','بطاطس مع صوص شيدر'],
+['بطاطس فاهيتا','70 / 80','بطاطس مع فاهيتا وصوصات'],['بطاطس مكسيكي','70 / 80','بطاطس مع خلطة مكسيكي وصوصات'],
+['بطاطس كرسبي','70 / 80','بطاطس مع كرسبي وصوصات'],['بطاطس زنجر','70 / 80','بطاطس مع زنجر وصوصات'],
+['بطاطس اسكالوب','70 / 80','بطاطس مع اسكالوب وصوصات'],['بطاطس بانيه','70 / 80','بطاطس مع بانيه وصوصات'],
+['بطاطس فراخ','40 / 50','بطاطس مع قطع فراخ'],['بطاطس سوري تشكن رول','70 / 80','بطاطس مع تشكن رول'],
+['إضافة موتزاريلا',15,'إضافة موتزاريلا'],['إضافة شيدر',20,'إضافة شيدر']]},
+{id:'shawarma',title:'قسم الشاورما',icon:'fa-drumstick-bite',items:[
+['ساندوتش شاورما صغير',70,'شاورما دجاج + خبز + ثومية + مخلل'],['ساندوتش شاورما وسط',80,'شاورما دجاج + خبز + ثومية + مخلل'],
+['ساندوتش شاورما كبير',100,'شاورما دجاج + خبز + ثومية + مخلل'],['ساندوتش شاورما بطاطس',95,'شاورما + بطاطس + ثومية + مخلل'],
+['ساندوتش شاورما فرنساوي',90,'شاورما + خبز فرنساوي + ثومية + مخلل'],['شاورما نسيم الشام',120,'شاورما + بطاطس + موتزاريلا + صوصات'],
+['وجبة شاورما عربي',120,'شاورما عربي + بطاطس + ثومية + مخلل'],['وجبة شاورما عربي دبل',210,'كمية دبل من الشاورما العربي + بطاطس + ثومية + مخلل'],
+['وجبة شاورما عربي تربل',310,'كمية تربل من الشاورما العربي + بطاطس + ثومية + مخلل'],['وجبة نسيم الشام',450,'ساندوتشات شاورما + بطاطس + مخلل + صوصات'],
+['وجبة شاورما اكسترا',140,'شاورما + بطاطس + مخلل + صوصات'],['كيلو شاورما',670,'كيلو شاورما'],
+['نصف كيلو شاورما',320,'نصف كيلو شاورما'],['ربع كيلو شاورما',150,'ربع كيلو شاورما']]},
+{id:'fatta',title:'قسم الفتة',icon:'fa-bowl-rice',items:[
+['فتة شاورما','90 / 110 / 160','فتة + شاورما + صوصات'],['فتة فاهيتا','90 / 110 / 150','فتة + فاهيتا + صوصات'],
+['فتة مكسيكي','90 / 110 / 150','فتة + خلطة مكسيكي + صوصات'],['فتة كرسبي','90 / 110 / 150','فتة + كرسبي + صوصات'],
+['فتة بانيه','90 / 110 / 150','فتة + بانيه + صوصات'],['فتة نسيم الشام','105 / 120 / 180','فتة + تشكيلة نسيم الشام + صوصات'],
+['فتة كفتة','120 / 150','فتة + كفتة + صوصات']]},
+{id:'grilled',title:'فراخ مشوية',icon:'fa-fire',items:[
+['فراخ مشوية',345,'فرخة مشوية على الفحم'],['نص فراخة مشوية',180,'نصف فرخة مشوية على الفحم'],
+['وجبة ربع صدر',115,'ربع صدر مشوي + أرز/بطاطس + سلطات'],['وجبة ربع ورك',100,'ربع ورك مشوي + أرز/بطاطس + سلطات'],
+['فراخة شواية سادة',300,'فرخة شواية سادة']]},
+{id:'broasted',title:'قسم البروستد',icon:'fa-drumstick-bite',items:[
+['تشكين زنجر 5 قطع',80,'5 قطع زنجر'],['فرخة بروستد 8 قطع',345,'8 قطع بروستد + بطاطس + ثومية + كول سلو'],
+['وجبة دجاج بروستد 4 قطع',185,'4 قطع بروستد + بطاطس + ثومية + كول سلو + عيش'],
+['وجبة دجاج بروستد 3 قطع',150,'3 قطع بروستد + بطاطس + ثومية + كول سلو + عيش'],['وجبة طفل بروستد',100,'بروستد + بطاطس + عيش/صوص']]},
+{id:'pizza',title:'قسم البيتزا',icon:'fa-pizza-slice',items:[
+['بيتزا مارغريتا','105 / 130','جبنة + صلصة + خضار حسب النوع'],['بيتزا خضار','105 / 130','جبنة + صلصة + خضار'],
+['بيتزا ميكس جبن','115 / 130','تشكيلة جبن + صلصة'],['بيتزا سبيشال','135 / 155','جبنة + صلصة + إضافات سبيشال'],
+['بيتزا مشروم','135 / 155','جبنة + مشروم + صلصة'],['بيتزا كفتة','140 / 165','جبنة + كفتة + صلصة'],
+['بيتزا بسطرمة','120 / 150','جبنة + بسطرمة + صلصة'],['بيتزا كرسبي','120 / 140','جبنة + كرسبي + صلصة'],
+['بيتزا شاورما','125 / 155','جبنة + شاورما + صلصة'],['بيتزا مكس لحوم','145 / 175','جبنة + تشكيلة لحوم + صلصة'],
+['بيتزا نسيم الشام','130 / 160','خلطة نسيم الشام + جبنة + صلصة'],['بيتزا برجر','125 / 145','جبنة + برجر + صلصة'],
+['بيتزا فاهيتا','115 / 135','جبنة + فاهيتا + صلصة'],['بيتزا تشكن رانش','120 / 140','جبنة + دجاج + رانش + صلصة'],['حشو أطراف','35 / 40','حشو أطراف للبيتزا']]},
+{id:'crepe',title:'قسم الكريب',icon:'fa-bread-slice',items:[
+['كريب شاورما',85,'شاورما + جبنة/صوص + خضار + مخلل'],['كريب كرسبي',75,'كرسبي + جبنة + صوص + خضار'],
+['كريب زنجر',75,'زنجر + جبنة + صوص + خضار'],['كريب فاهيتا',80,'فاهيتا + جبنة + صوص + خضار'],
+['كريب مكسيكي',80,'خلطة مكسيكي + جبنة + صوص'],['كريب مكس فراخ',100,'تشكيلة فراخ + جبنة + صوص'],
+['كريب مكس لحوم',125,'تشكيلة لحوم + جبنة + صوص'],['كريب مكس جبن',65,'تشكيلة جبن + صوص'],
+['كريب سجق',90,'سجق + جبنة + صوص'],['كريب كفتة',95,'كفتة + جبنة + صوص'],
+['كريب شيش',90,'شيش طاووق + جبنة + صوص'],['كريب بانيه',75,'بانيه + جبنة + صوص'],
+['كريب بطاطس',60,'بطاطس + جبنة + صوص'],['كريب اسكالوب',75,'اسكالوب + جبنة + صوص'],
+['كريب شاورما بطاطس',95,'شاورما + بطاطس + جبنة + صوص']]},
+{id:'pasta',title:'قسم المكرونة',icon:'fa-bowl-food',items:[
+['مكرونة لحمة مفروم','70 / 80','مكرونة + لحمة مفرومة + صوص'],['مكرونة سجق','65 / 80','مكرونة + سجق + صوص'],
+['مكرونة كوري','45 / 60','مكرونة + خلطة كوري'],['مكرونة بسطرمة','65 / 80','مكرونة + بسطرمة + صوص'],
+['مكرونة شاورما','80 / 105','مكرونة + شاورما + صوص'],['مكرونة مشكل لحوم','95 / 110','مكرونة + تشكيلة لحوم + صوص'],
+['مكرونة كرسبي','75 / 95','مكرونة + كرسبي + صوص'],['مكرونة فاهيتا','75 / 95','مكرونة + فاهيتا + صوص'],
+['مكرونة ميكس فراخ','95 / 115','مكرونة + ميكس فراخ + صوص']]},
+{id:'boxes',title:'قسم البوكسات',icon:'fa-box-open',items:[
+['بوكس الدلع',200,'ساندوتش شاورما + كفتة فراخ + كفتة برجر'],['بوكس الخطيب',375,'شيش طاووق + شيش لحم + كفتة لحم + كفتة فراخ'],
+['بوكس المعلم',400,'طاووق + كفتة لحم + كفتة فراخ + 1 شاورما'],['بوكس الرايق',195,'1 فاهيتا + 2 قطع كرسبي + صوصات + بطاطس'],
+['بوكس العائلي',320,'2 ساندوتش شاورما + 2 فاهيتا + 2 كرسبي + بطاطس']]},
+{id:'kais',title:'قسم الكايزر',icon:'fa-burger',items:[
+['برجر فراخ كايزر',30,'برجر فراخ + خبز كايزر + إضافات'],['برجر لحمة كايزر',30,'برجر لحم + خبز كايزر + إضافات'],
+['شاورما كايزر',40,'شاورما + خبز كايزر + إضافات'],['كرسبي كايزر',35,'كرسبي + خبز كايزر + إضافات']]},
+{id:'maria',title:'قسم الماريا',icon:'fa-bread-slice',items:[
+['ماريا شاورما',125,'ماريا + شاورما + جبنة + صوص'],['ماريا كرسبي',120,'ماريا + كرسبي + جبنة + صوص'],
+['ماريا زنجر',120,'ماريا + زنجر + جبنة + صوص'],['ماريا فاهيتا',110,'ماريا + فاهيتا + جبنة + صوص'],
+['ماريا مكسيكي',110,'ماريا + خلطة مكسيكي + جبنة + صوص']]},
+{id:'appetizers',title:'قسم المقبلات',icon:'fa-plate-wheat',items:[
+['الطحينة','15 / 25','طحينة'],['باكت بطاطس','20 / 25','باكت بطاطس'],['طبق أرز بسمتي وسط','30 / 40','أرز بسمتي'],
+['كول سلو','20 / 30','كول سلو'],['تومية','15 / 25','ثومية'],['عيش سوري',5,'عيش سوري'],['عيش شامي',3,'عيش شامي'],
+['مخلل',15,'مخلل'],['عيش كريب',10,'عيش كريب']]},
+{id:'grilled-meals',title:'قسم المشاوي على الفحم',icon:'fa-fire-burner',items:[
+['وجبة شيش طاووق',120,'شيش طاووق + أرز/بطاطس + سلطات'],['وجبة كفتة لحم',130,'كفتة لحم + أرز/بطاطس + سلطات'],
+['وجبة كفتة فراخ',110,'كفتة فراخ + أرز/بطاطس + سلطات'],['وجبة فحم',80,'اختيار مشوي على الفحم + إضافاته'],
+['فراخ على الفحم',325,'فراخ مشوية على الفحم + أرز/سلطات'],['نص فرخة على الفحم',180,'نصف فرخة + أرز/سلطات'],
+['ربع ورك على الفحم',100,'ربع ورك + أرز/سلطات'],['ربع صدر على الفحم',115,'ربع صدر + أرز/سلطات']]},
+{id:'grilled-sandwiches',title:'ساندوتشات مشاوي',icon:'fa-sandwich',items:[
+['اسماش برجر',115,'برجر مشوي + خبز + إضافات'],['شيش طاووق',75,'شيش طاووق + خبز + صوص'],
+['كفتة لحم',110,'كفتة لحم + خبز + صوص'],['كفتة فراخ',90,'كفتة فراخ + خبز + صوص']]}
+];
+
+const cart=JSON.parse(localStorage.getItem('nasimCart')||'[]');
+const nav=document.getElementById('nav');
+const menuRoot=document.getElementById('menuSections');
+
+nav.innerHTML='<a href="#offers" class="whitespace-nowrap rounded-full px-4 py-2 bg-red-600 font-bold text-xs">العروض</a>'+
+menu.map(s=>`<a href="#${s.id}" class="whitespace-nowrap rounded-full px-4 py-2 bg-white/5 hover:bg-yellow-500 hover:text-black transition text-xs">${s.title.replace('قسم ','')}</a>`).join('')+
+'<a href="#contact" class="whitespace-nowrap rounded-full px-4 py-2 bg-white/5 text-xs">التواصل</a>';
+
+function sizeName(index,total){
+if(total===3)return ['صغير','وسط','كبير'][index];
+if(total===2)return ['صغير','كبير'][index];
+return '';
+}
+
+function render(){
+menuRoot.innerHTML=menu.map(section=>`
+<section id="${section.id}" class="scroll-mt-28">
+<div class="flex items-end justify-between gap-3 mb-5">
+<div><h2 class="section-title">${section.title}</h2><p class="text-xs text-gray-500 mt-2">${section.items.length} صنف</p></div>
+</div>
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+${section.items.map((it,i)=>{
+const prices=String(it[1]).split('/').map(x=>x.trim());
+let priceUI='';
+if(prices.length>1){
+priceUI=`<div class="size-box"><div class="size-title">اختار الحجم</div><div class="size-options">
+${prices.map((p,index)=>`<button type="button" id="size-${section.id}-${i}-${index}" onclick="selectSize('${section.id}',${i},${index})" class="size-option ${index===0?'active':''}">
+<div class="size-name">${sizeName(index,prices.length)}</div><div class="size-price">${p} ج.م</div></button>`).join('')}
+</div><input type="hidden" id="selected-price-${section.id}-${i}" value="${prices[0]}"></div>`;
+}else priceUI=`<div class="gold font-black mt-2">${it[1]} ج.م</div>`;
+return `<article class="item-card rounded-3xl overflow-hidden"><div class="p-4">
+<div><h3 class="font-extrabold leading-6">${it[0]}</h3><div class="text-[10px] text-gray-500 mt-1">${section.title.replace('قسم ','')}</div></div>
+${priceUI}
+<div class="mt-3 rounded-2xl bg-white/[.035] p-3"><p class="text-[11px] leading-5 text-gray-400"><span class="gold font-bold">المكونات: </span>${it[2]}</p></div>
+<button onclick="addFromCard(${menu.indexOf(section)},${i})" class="w-full mt-3 rounded-xl btn-red py-2.5 font-extrabold text-sm"><i class="fa-solid fa-plus ml-1"></i>أضف للطلب</button>
+</div></article>`;
+}).join('')}
+</div></section>`).join('');
+}
+
+function selectSize(sectionId,itemIndex,sizeIndex){
+const section=menu.find(s=>s.id===sectionId);
+const prices=String(section.items[itemIndex][1]).split('/').map(x=>x.trim());
+document.getElementById(`selected-price-${sectionId}-${itemIndex}`).value=prices[sizeIndex];
+prices.forEach((_,i)=>document.getElementById(`size-${sectionId}-${itemIndex}-${i}`)?.classList.toggle('active',i===sizeIndex));
+}
+
+function save(){localStorage.setItem('nasimCart',JSON.stringify(cart));updateCart();}
+function addFromCard(sectionIndex,itemIndex){
+const section=menu[sectionIndex],it=section.items[itemIndex];
+const prices=String(it[1]).split('/').map(x=>x.trim());
+const price=prices.length>1?document.getElementById(`selected-price-${section.id}-${itemIndex}`).value:it[1];
+const existing=cart.find(x=>x.name===it[0]&&x.section===section.title&&String(x.price)===String(price));
+if(existing)existing.qty++;else cart.push({section:section.title,name:it[0],price,ingredients:it[2],qty:1});
+save();showToast(`${it[0]} تمت إضافته للطلب`);
+}
+
+function priceValue(p){const m=String(p).replace(/,/g,'').match(/\d+/);return m?Number(m[0]):0;}
+
+function updateCart(){
+const count=cart.reduce((s,x)=>s+x.qty,0),total=cart.reduce((s,x)=>s+priceValue(x.price)*x.qty,0);
+document.getElementById('cartCount').textContent=`(${count})`;
+document.getElementById('floatingCount').textContent=count;
+document.getElementById('cartTotal').textContent=total+' ج.م';
+document.getElementById('cartItems').innerHTML=cart.length?cart.map((x,i)=>`
+<div class="rounded-2xl bg-white/5 border border-white/5 p-3">
+<div class="flex justify-between gap-3"><div><b>${x.name}</b><div class="text-[10px] text-gray-500 mt-1">${x.section}</div></div><b class="gold">${x.price} ج.م</b></div>
+<p class="text-[10px] text-gray-500 mt-2">المكونات: ${x.ingredients}</p>
+<div class="flex items-center justify-between mt-3"><div class="qty flex items-center gap-2"><button onclick="changeQty(${i},-1)">−</button><span class="font-bold">${x.qty}</span><button onclick="changeQty(${i},1)">+</button></div>
+<button onclick="removeItem(${i})" class="text-red-400 text-xs">حذف</button></div>
+</div>`).join(''):`<div class="h-full grid place-items-center text-center text-gray-500"><div><i class="fa-solid fa-basket-shopping text-4xl mb-3"></i><p>السلة فارغة</p><p class="text-xs mt-1">أضف الأصناف التي تريدها من المنيو</p></div></div>`;
+}
+
+function changeQty(i,d){if(!cart[i])return;cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);save();}
+function removeItem(i){cart.splice(i,1);save();}
+function clearCart(){cart.length=0;save();showToast('تم تفريغ السلة');}
+function openCart(){document.getElementById('cartDrawer').classList.add('open');document.getElementById('overlay').classList.add('open');updateCart();}
+function closeCart(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
+function showToast(text){const t=document.getElementById('toast');t.textContent=text;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1800);}
+function sendOrder(){
+if(!cart.length){showToast('السلة فارغة');return;}
+const name=document.getElementById('customerName').value.trim(),phone=document.getElementById('customerPhone').value.trim(),address=document.getElementById('customerAddress').value.trim();
+const total=cart.reduce((s,x)=>s+priceValue(x.price)*x.qty,0);
+let msg='طلب جديد من موقع نسيم الشام\\n\\n';
+if(name)msg+='الاسم: '+name+'\\n';if(phone)msg+='الهاتف: '+phone+'\\n';if(address)msg+='العنوان/الملاحظات: '+address+'\\n';
+msg+='\\nالأصناف:\\n';cart.forEach((x,i)=>msg+=`${i+1}) ${x.name} × ${x.qty} - ${x.price} ج.م\\n`);
+msg+=`\\nالإجمالي: ${total} ج.م`;
+window.open('https://wa.me/201064262660?text='+encodeURIComponent(msg),'_blank','noopener');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart();});
+render();updateCart();
+</script>
+</body>
+</html>
