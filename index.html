@@ -272,10 +272,15 @@ function sendOrder(){
 if(!cart.length){showToast('السلة فارغة');return;}
 const name=document.getElementById('customerName').value.trim(),phone=document.getElementById('customerPhone').value.trim(),address=document.getElementById('customerAddress').value.trim();
 const total=cart.reduce((s,x)=>s+priceValue(x.price)*x.qty,0);
-let msg='طلب جديد من موقع نسيم الشام\\n\\n';
-if(name)msg+='الاسم: '+name+'\\n';if(phone)msg+='الهاتف: '+phone+'\\n';if(address)msg+='العنوان/الملاحظات: '+address+'\\n';
-msg+='\\nالأصناف:\\n';cart.forEach((x,i)=>msg+=`${i+1}) ${x.name} × ${x.qty} - ${x.price} ج.م\\n`);
-msg+=`\\nالإجمالي: ${total} ج.م`;
+
+let msg='طلب جديد من موقع نسيم الشام\n\n';
+if(name)msg+='الاسم: '+name+'\n';
+if(phone)msg+='الهاتف: '+phone+'\n';
+if(address)msg+='العنوان/الملاحظات: '+address+'\n';
+msg+='\nالأصناف:\n';
+cart.forEach((x,i)=>msg+=`${i+1}) ${x.name} × ${x.qty}\n`);
+msg+=`\nالإجمالي: ${total} ج.م`;
+
 window.open('https://wa.me/201064262660?text='+encodeURIComponent(msg),'_blank','noopener');
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart();});
