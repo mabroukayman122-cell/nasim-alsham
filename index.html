@@ -33,6 +33,14 @@
 .size-option:hover{border-color:rgba(240,199,94,.5)}.size-option.active{border-color:var(--gold);background:rgba(240,199,94,.12)}
 .size-name{font-size:12px;font-weight:900}.size-price{font-size:13px;color:var(--gold);font-weight:900;margin-top:2px}
 .toast{transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translateY(0);opacity:1}
+.search-wrap{position:relative;max-width:720px;margin:0 auto}
+.search-wrap input{width:100%;background:rgba(20,20,20,.9);border:1px solid rgba(240,199,94,.22);border-radius:18px;padding:14px 48px 14px 48px;color:#fff;outline:none;transition:.2s;font-family:Cairo,sans-serif}
+.search-wrap input:focus{border-color:rgba(240,199,94,.65);box-shadow:0 0 0 3px rgba(240,199,94,.08)}
+.search-wrap .search-icon{position:absolute;right:17px;top:50%;transform:translateY(-50%);color:var(--gold)}
+.search-wrap .clear-search{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.07);color:#aaa;display:none}
+.search-wrap .clear-search.show{display:block}
+.no-results{display:none;text-align:center;padding:45px 15px;color:#999}
+.no-results.show{display:block}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#333;border-radius:99px}
 </style>
 </head>
@@ -57,6 +65,14 @@
 
 <nav class="sticky top-0 z-40 glass px-3 py-3"><div id="nav" class="max-w-7xl mx-auto flex gap-2 overflow-x-auto no-scrollbar"></div></nav>
 
+<div class="px-4 pt-5">
+<div class="search-wrap">
+<i class="fa-solid fa-magnifying-glass search-icon"></i>
+<input id="menuSearch" type="search" autocomplete="off" placeholder="ابحث عن الأكل... مثل شاورما، بيتزا، كريب" aria-label="البحث في المنيو">
+<button id="clearSearch" class="clear-search" type="button" aria-label="مسح البحث"><i class="fa-solid fa-xmark"></i></button>
+</div>
+</div>
+
 <main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
 <section id="offers" class="scroll-mt-28">
 <div class="glass rounded-3xl p-6 md:p-8 border-dashed border-2 border-yellow-500/30">
@@ -73,6 +89,7 @@
 </div>
 <div class="mt-5 rounded-2xl bg-black/30 p-5 text-center"><i class="fa-solid fa-location-dot gold text-xl"></i><p class="mt-2">مطوبس - شارع بورسعيد - أول شارع سيدي عامر</p></div>
 </div></section>
+<div id="noResults" class="no-results"><i class="fa-solid fa-face-frown text-3xl mb-3"></i><p class="font-bold">مش لاقي الصنف ده</p><p class="text-xs mt-1">جرب كلمة تانية زي شاورما أو بيتزا أو كريب</p></div>
 </main>
 
 <div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-auto z-40 flex gap-2">
@@ -203,14 +220,32 @@ if(total===2)return ['صغير','كبير'][index];
 return '';
 }
 
-function render(){
-menuRoot.innerHTML=menu.map(section=>`
-<section id="${section.id}" class="scroll-mt-28">
+function normalizeSearchText(text){
+return String(text||'').toLowerCase().trim()
+.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
+}
+
+function render(query=''){
+const q=normalizeSearchText(query);
+let found=0;
+
+menuRoot.innerHTML=menu.map(section=>{
+const matches=section.items.map((it,i)=>({it,i})).filter(({it})=>{
+if(!q)return true;
+return normalizeSearchText(it[0]).includes(q) ||
+normalizeSearchText(it[2]).includes(q) ||
+normalizeSearchText(section.title).includes(q);
+});
+
+if(!matches.length)return '';
+found+=matches.length;
+
+return `<section id="${section.id}" class="scroll-mt-28">
 <div class="flex items-end justify-between gap-3 mb-5">
-<div><h2 class="section-title">${section.title}</h2><p class="text-xs text-gray-500 mt-2">${section.items.length} صنف</p></div>
+<div><h2 class="section-title">${section.title}</h2><p class="text-xs text-gray-500 mt-2">${matches.length} صنف</p></div>
 </div>
 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-${section.items.map((it,i)=>{
+${matches.map(({it,i})=>{
 const prices=String(it[1]).split('/').map(x=>x.trim());
 let priceUI='';
 if(prices.length>1){
@@ -226,9 +261,20 @@ ${priceUI}
 <button onclick="addFromCard(${menu.indexOf(section)},${i})" class="w-full mt-3 rounded-xl btn-red py-2.5 font-extrabold text-sm"><i class="fa-solid fa-plus ml-1"></i>أضف للطلب</button>
 </div></article>`;
 }).join('')}
-</div></section>`).join('');
+</div></section>`;
+}).join('');
+
+const noResults=document.getElementById('noResults');
+if(noResults)noResults.classList.toggle('show',q!==''&&found===0);
 }
 
+function runMenuSearch(){
+const input=document.getElementById('menuSearch');
+const clear=document.getElementById('clearSearch');
+const q=input.value;
+render(q);
+clear.classList.toggle('show',q.trim()!=='');
+}
 function selectSize(sectionId,itemIndex,sizeIndex){
 const section=menu.find(s=>s.id===sectionId);
 const prices=String(section.items[itemIndex][1]).split('/').map(x=>x.trim());
@@ -283,7 +329,15 @@ msg+=`\nالإجمالي: ${total} ج.م`;
 
 window.open('https://wa.me/201064262660?text='+encodeURIComponent(msg),'_blank','noopener');
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart();});
+document.addEventListener('keydown',e=>{
+if(e.key==='Escape'){closeCart();document.getElementById('menuSearch')?.blur();}
+});
+document.getElementById('menuSearch').addEventListener('input',runMenuSearch);
+document.getElementById('clearSearch').addEventListener('click',()=>{
+document.getElementById('menuSearch').value='';
+runMenuSearch();
+document.getElementById('menuSearch').focus();
+});
 render();updateCart();
 </script>
 </body>
