@@ -19,8 +19,10 @@
 .gold{color:var(--gold)}
 .section-title{display:flex;align-items:center;gap:12px;font-weight:900;font-size:1.55rem}
 .section-title:before{content:"";width:5px;height:36px;background:linear-gradient(#e52323,#f0c75e);border-radius:99px}
-.item-card{background:linear-gradient(145deg,#181818,#111);border:1px solid var(--line);transition:.25s}
+.item-card{background:linear-gradient(145deg,#181818,#111);border:1px solid var(--line);transition:.25s;position:relative;overflow:hidden}
 .item-card:hover{transform:translateY(-3px);border-color:rgba(240,199,94,.45);box-shadow:0 16px 40px rgba(0,0,0,.25)}
+.item-card.tap-glow{border-color:var(--gold)!important;box-shadow:0 0 0 1px rgba(240,199,94,.35),0 0 28px rgba(240,199,94,.22),0 16px 40px rgba(0,0,0,.3);transform:translateY(-3px)}
+.item-card.tap-glow:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(240,199,94,.16),transparent 58%);pointer-events:none}
 .btn-red{background:linear-gradient(135deg,#ef2929,#a90f0f)}.btn-gold{background:linear-gradient(135deg,#f7d979,#c99b2c);color:#151515}
 .hero{background:radial-gradient(circle at 50% 0,rgba(229,35,35,.28),transparent 42%),linear-gradient(180deg,#151515,#080808)}
 .badge{border:1px solid rgba(240,199,94,.25);background:rgba(240,199,94,.08);color:var(--gold)}
@@ -33,14 +35,6 @@
 .size-option:hover{border-color:rgba(240,199,94,.5)}.size-option.active{border-color:var(--gold);background:rgba(240,199,94,.12)}
 .size-name{font-size:12px;font-weight:900}.size-price{font-size:13px;color:var(--gold);font-weight:900;margin-top:2px}
 .toast{transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translateY(0);opacity:1}
-.search-wrap{position:relative;max-width:720px;margin:0 auto}
-.search-wrap input{width:100%;background:rgba(20,20,20,.9);border:1px solid rgba(240,199,94,.22);border-radius:18px;padding:14px 48px 14px 48px;color:#fff;outline:none;transition:.2s;font-family:Cairo,sans-serif}
-.search-wrap input:focus{border-color:rgba(240,199,94,.65);box-shadow:0 0 0 3px rgba(240,199,94,.08)}
-.search-wrap .search-icon{position:absolute;right:17px;top:50%;transform:translateY(-50%);color:var(--gold)}
-.search-wrap .clear-search{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.07);color:#aaa;display:none}
-.search-wrap .clear-search.show{display:block}
-.no-results{display:none;text-align:center;padding:45px 15px;color:#999}
-.no-results.show{display:block}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#333;border-radius:99px}
 </style>
 </head>
@@ -65,14 +59,6 @@
 
 <nav class="sticky top-0 z-40 glass px-3 py-3"><div id="nav" class="max-w-7xl mx-auto flex gap-2 overflow-x-auto no-scrollbar"></div></nav>
 
-<div class="px-4 pt-5">
-<div class="search-wrap">
-<i class="fa-solid fa-magnifying-glass search-icon"></i>
-<input id="menuSearch" type="search" autocomplete="off" placeholder="ابحث عن الأكل... مثل شاورما، بيتزا، كريب" aria-label="البحث في المنيو">
-<button id="clearSearch" class="clear-search" type="button" aria-label="مسح البحث"><i class="fa-solid fa-xmark"></i></button>
-</div>
-</div>
-
 <main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
 <section id="offers" class="scroll-mt-28">
 <div class="glass rounded-3xl p-6 md:p-8 border-dashed border-2 border-yellow-500/30">
@@ -89,7 +75,6 @@
 </div>
 <div class="mt-5 rounded-2xl bg-black/30 p-5 text-center"><i class="fa-solid fa-location-dot gold text-xl"></i><p class="mt-2">مطوبس - شارع بورسعيد - أول شارع سيدي عامر</p></div>
 </div></section>
-<div id="noResults" class="no-results"><i class="fa-solid fa-face-frown text-3xl mb-3"></i><p class="font-bold">مش لاقي الصنف ده</p><p class="text-xs mt-1">جرب كلمة تانية زي شاورما أو بيتزا أو كريب</p></div>
 </main>
 
 <div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-auto z-40 flex gap-2">
@@ -99,7 +84,7 @@
 
 <div id="overlay" class="overlay fixed inset-0 bg-black/70 z-50" onclick="closeCart()"></div>
 <aside id="cartDrawer" class="cart-drawer fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#111] z-[60] border-l border-white/10 flex flex-col">
-<div class="p-5 border-b border-white/10 flex items-center justify-between"><div><h2 class="text-xl font-black">سلة المشتريات</h2><p class="text-xs text-gray-500">راجع طلبك قبل الإرسال</p></div><button onclick="closeCart()" class="w-10 h-10 rounded-xl bg-white/5"><i class="fa-solid fa-xmark"></i></button></div>
+<div class="p-5 border-b border-white/10 flex items-center justify-between gap-3"><div><h2 class="text-xl font-black">سلة المشتريات</h2><p class="text-xs text-gray-500">راجع طلبك قبل الإرسال</p></div><div class="flex items-center gap-2"><button onclick="backToMenu()" class="rounded-xl bg-white/5 px-3 py-2 text-xs font-bold hover:bg-yellow-500 hover:text-black transition"><i class="fa-solid fa-arrow-right ml-1"></i>العودة للمينيو</button><button onclick="closeCart()" class="w-10 h-10 rounded-xl bg-white/5"><i class="fa-solid fa-xmark"></i></button></div></div>
 <div class="px-4 pt-4"><button onclick="sendOrder()" class="order-now-btn w-full bg-green-600 hover:bg-green-500 rounded-2xl py-3 font-black shadow-lg"><i class="fa-brands fa-whatsapp ml-2"></i>اطلب الآن — إرسال الطلب كله مرة واحدة</button></div>
 <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
 <div class="border-t border-white/10 p-4 space-y-3">
@@ -116,11 +101,11 @@
 <script>
 const menu=[
 {id:'trays',title:'قسم الصواني',icon:'fa-layer-group',items:[
-['صينية المعلم',385,'ربع ورك + قطعة كرسبي + أرز + 2 ثومية + مخلل'],
-['صينية ملوك الجدعنة',595,'ربع فراخ + ربع كفتة + قطعة زنجر + 2 أرز + بطاطس + عيش'],
-['صينية اسطنبول - 4 أفراد',370,'كفتة لحم + كفتة فراخ + شيش طاووق + كفتة محشية + بطاطس'],
-['صينية اسطنبول - 6 أفراد',730,'فرخة + 2 ورك + ربع صدر + 2 كفتة + 2 شيش + بطاطس'],
-['صينية نسيم الشام العائلية - 10 أفراد',1200,'تشكيلة عائلية كبيرة من المشاوي والدجاج مع الأرز والسلطات والإضافات']]},
+['صينية المعلم',385,'ورك فراخ + 1 قطعة كرسبي + 1 ربع فراخ + 2 شيش طاووق + عيش + أرز + طحينة + زبادي + مخلل + ثومية + بطاطس'],
+['صينية ملوك الجدعنة',595,'ربع فراخ + ربع كفتة لحم + 3 قطع بانيه + 2 أرز + عيش + طحينة + زبادي + مخلل + ثومية + بطاطس'],
+['صينية اسطنبول - 4 أفراد',370,'كفتة لحم + كفتة فراخ + شيش طاووق + كفتة محشية + عيش + أرز + طحينة + زبادي + مخلل + ثومية + بطاطس'],
+['صينية اسطنبول - 6 أفراد',730,'نصف فرخة + 2 ورك + ربع صدر + ربع كفتة + 2 كفتة بانيه + عيش + أرز + طحينة + زبادي + مخلل + ثومية + بطاطس'],
+['صينية نسيم الشام العائلية - 10 أفراد',1200,'تشكيلة عائلية من المشاوي والدجاج + عيش + أرز + طحينة + زبادي + مخلل + ثومية + بطاطس']]},
 {id:'western',title:'وجبات الغربي',icon:'fa-utensils',items:[
 ['وجبة كرسبي',130,'3 قطع كرسبي + أرز + بطاطس + كول سلو + ثومية + مخلل + عيش'],
 ['وجبة زنجر',130,'3 قطع زنجر + أرز + بطاطس + كول سلو + ثومية + مخلل + عيش'],
@@ -220,32 +205,14 @@ if(total===2)return ['صغير','كبير'][index];
 return '';
 }
 
-function normalizeSearchText(text){
-return String(text||'').toLowerCase().trim()
-.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
-}
-
-function render(query=''){
-const q=normalizeSearchText(query);
-let found=0;
-
-menuRoot.innerHTML=menu.map(section=>{
-const matches=section.items.map((it,i)=>({it,i})).filter(({it})=>{
-if(!q)return true;
-return normalizeSearchText(it[0]).includes(q) ||
-normalizeSearchText(it[2]).includes(q) ||
-normalizeSearchText(section.title).includes(q);
-});
-
-if(!matches.length)return '';
-found+=matches.length;
-
-return `<section id="${section.id}" class="scroll-mt-28">
+function render(){
+menuRoot.innerHTML=menu.map(section=>`
+<section id="${section.id}" class="scroll-mt-28">
 <div class="flex items-end justify-between gap-3 mb-5">
-<div><h2 class="section-title">${section.title}</h2><p class="text-xs text-gray-500 mt-2">${matches.length} صنف</p></div>
+<div><h2 class="section-title">${section.title}</h2><p class="text-xs text-gray-500 mt-2">${section.items.length} صنف</p></div>
 </div>
 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-${matches.map(({it,i})=>{
+${section.items.map((it,i)=>{
 const prices=String(it[1]).split('/').map(x=>x.trim());
 let priceUI='';
 if(prices.length>1){
@@ -254,27 +221,16 @@ ${prices.map((p,index)=>`<button type="button" id="size-${section.id}-${i}-${ind
 <div class="size-name">${sizeName(index,prices.length,section.id)}</div><div class="size-price">${p} ج.م</div></button>`).join('')}
 </div><input type="hidden" id="selected-price-${section.id}-${i}" value="${prices[0]}"></div>`;
 }else priceUI=`<div class="gold font-black mt-2">${it[1]} ج.م</div>`;
-return `<article class="item-card rounded-3xl overflow-hidden"><div class="p-4">
+return `<article onclick="pulseCard(this)" class="item-card rounded-3xl overflow-hidden"><div class="p-4">
 <div><h3 class="font-extrabold leading-6">${it[0]}</h3><div class="text-[10px] text-gray-500 mt-1">${section.title.replace('قسم ','')}</div></div>
 ${priceUI}
 <div class="mt-3 rounded-2xl bg-white/[.035] p-3"><p class="text-[11px] leading-5 text-gray-400"><span class="gold font-bold">المكونات: </span>${it[2]}</p></div>
 <button onclick="addFromCard(${menu.indexOf(section)},${i})" class="w-full mt-3 rounded-xl btn-red py-2.5 font-extrabold text-sm"><i class="fa-solid fa-plus ml-1"></i>أضف للطلب</button>
 </div></article>`;
 }).join('')}
-</div></section>`;
-}).join('');
-
-const noResults=document.getElementById('noResults');
-if(noResults)noResults.classList.toggle('show',q!==''&&found===0);
+</div></section>`).join('');
 }
 
-function runMenuSearch(){
-const input=document.getElementById('menuSearch');
-const clear=document.getElementById('clearSearch');
-const q=input.value;
-render(q);
-clear.classList.toggle('show',q.trim()!=='');
-}
 function selectSize(sectionId,itemIndex,sizeIndex){
 const section=menu.find(s=>s.id===sectionId);
 const prices=String(section.items[itemIndex][1]).split('/').map(x=>x.trim());
@@ -313,6 +269,8 @@ function removeItem(i){cart.splice(i,1);save();}
 function clearCart(){cart.length=0;save();showToast('تم تفريغ السلة');}
 function openCart(){document.getElementById('cartDrawer').classList.add('open');document.getElementById('overlay').classList.add('open');updateCart();}
 function closeCart(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
+function backToMenu(){closeCart();document.getElementById('menuSections').scrollIntoView({behavior:'smooth',block:'start'});}
+function pulseCard(card){card.classList.remove('tap-glow');void card.offsetWidth;card.classList.add('tap-glow');clearTimeout(card.__glowTimer);card.__glowTimer=setTimeout(()=>card.classList.remove('tap-glow'),650);}
 function showToast(text){const t=document.getElementById('toast');t.textContent=text;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1800);}
 function sendOrder(){
 if(!cart.length){showToast('السلة فارغة');return;}
@@ -329,15 +287,7 @@ msg+=`\nالإجمالي: ${total} ج.م`;
 
 window.open('https://wa.me/201064262660?text='+encodeURIComponent(msg),'_blank','noopener');
 }
-document.addEventListener('keydown',e=>{
-if(e.key==='Escape'){closeCart();document.getElementById('menuSearch')?.blur();}
-});
-document.getElementById('menuSearch').addEventListener('input',runMenuSearch);
-document.getElementById('clearSearch').addEventListener('click',()=>{
-document.getElementById('menuSearch').value='';
-runMenuSearch();
-document.getElementById('menuSearch').focus();
-});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart();});
 render();updateCart();
 </script>
 </body>
