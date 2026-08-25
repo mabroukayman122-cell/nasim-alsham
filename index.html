@@ -86,130 +86,15 @@ main.menu-watermark:before{animation:logoFireGlow 3.2s ease-in-out infinite}
 .search-empty{display:none;text-align:center;padding:35px;color:#777}
 </style>
 
-<style>
-#offers{
-  position:relative;
-  overflow:hidden;
-  border-radius:32px;
-}
-#offers::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  border-radius:34px;
-  padding:2px;
-  background:linear-gradient(120deg,#7a5200,#ffd700,#fff1a6,#d4af37,#8a6500,#ffd700);
-  background-size:300% 300%;
-  animation:offerGoldFlow 5s ease infinite;
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-  pointer-events:none;
-  filter:drop-shadow(0 0 10px rgba(255,215,0,.55)) drop-shadow(0 0 28px rgba(255,190,0,.25));
-}
-#offers::after{
-  content:"";
-  position:absolute;
-  width:220px;
-  height:220px;
-  top:-100px;
-  left:-100px;
-  background:radial-gradient(circle,rgba(255,215,0,.28),transparent 68%);
-  animation:offerGlow 4s ease-in-out infinite alternate;
-  pointer-events:none;
-}
-#offers > .glass{
-  position:relative;
-  z-index:1;
-  background:linear-gradient(145deg,rgba(20,16,7,.96),rgba(8,8,8,.94));
-  box-shadow:inset 0 0 35px rgba(255,215,0,.08),0 0 35px rgba(255,193,7,.14);
-}
-#offers .section-title{
-  text-shadow:0 0 8px rgba(255,215,0,.65),0 0 22px rgba(255,180,0,.35);
-}
-#offers .badge{
-  border:1px solid rgba(255,215,0,.75);
-  box-shadow:0 0 10px rgba(255,215,0,.35),inset 0 0 10px rgba(255,215,0,.08);
-  animation:offerBadge 1.8s ease-in-out infinite;
-}
-#offers .item-card{
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(255,215,0,.24);
-  background:linear-gradient(145deg,rgba(255,215,0,.07),rgba(255,255,255,.025));
-  box-shadow:0 0 14px rgba(255,215,0,.08);
-  transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
-}
-#offers .item-card:hover{
-  transform:translateY(-6px) scale(1.015);
-  border-color:rgba(255,215,0,.75);
-  box-shadow:0 0 18px rgba(255,215,0,.28),0 0 42px rgba(255,170,0,.14);
-}
-#offers .item-card::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-130%;
-  width:55%;
-  height:100%;
-  transform:skewX(-20deg);
-  background:linear-gradient(90deg,transparent,rgba(255,239,150,.32),transparent);
-  animation:offerShine 3.8s linear infinite;
-}
-#offers .gold{
-  text-shadow:0 0 7px rgba(255,215,0,.7),0 0 18px rgba(255,180,0,.35);
-}
-@keyframes offerGoldFlow{
-  0%,100%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-}
-@keyframes offerGlow{
-  from{transform:translate(0,0) scale(.85);opacity:.45}
-  to{transform:translate(300px,180px) scale(1.25);opacity:.85}
-}
-@keyframes offerBadge{
-  0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(255,215,0,.3)}
-  50%{transform:scale(1.04);box-shadow:0 0 22px rgba(255,215,0,.65)}
-}
-@keyframes offerShine{
-  0%{left:-130%}
-  55%,100%{left:150%}
-}
-</style>
-
-
-<style>
-html{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
-body{
-  overscroll-behavior-y:auto;
-  -webkit-tap-highlight-color:transparent;
-}
-*{
-  -webkit-tap-highlight-color:transparent;
-}
-img{content-visibility:auto}
-.item-card,.glass,.btn-gold,.btn-red{
-  will-change:auto;
-}
-@media (max-width:768px){
-  html{scroll-behavior:smooth}
-  #offers::before,#offers::after{animation:none}
-  #offers .item-card::before{animation:none}
-  #offers .badge{animation:none}
-  .item-card:hover{transform:none!important}
-  .glass{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-  .shadow-2xl,.shadow-lg{box-shadow:0 4px 14px rgba(0,0,0,.22)!important}
-}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto!important}
-  *,*::before,*::after{
-    animation-duration:.01ms!important;
-    animation-iteration-count:1!important;
-    transition-duration:.01ms!important;
-  }
-}
-</style>
-
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-933NQE2PDC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-933NQE2PDC');
+</script>
+<!-- End Google Analytics -->
 </head>
 <body class="pb-24">
 
@@ -522,12 +407,17 @@ if(!cart.length){showToast('السلة فارغة');return;}
 const name=document.getElementById('customerName').value.trim(),phone=document.getElementById('customerPhone').value.trim(),address=document.getElementById('customerAddress').value.trim();
 const total=cart.reduce((s,x)=>s+priceValue(x.price)*x.qty,0);
 
-let msg='طلب جديد من موقع نسيم الشام\n\n';
+const hasOffer = cart.some(x => String(x.name).includes('🔥 عرض - ') || String(x.name).includes('عرض - '));
+let msg = hasOffer ? '🔥 طلب عرض من نسيم الشام\n\n' : 'طلب جديد من موقع نسيم الشام\n\n';
 if(name)msg+='الاسم: '+name+'\n';
 if(phone)msg+='الهاتف: '+phone+'\n';
 if(address)msg+='العنوان/الملاحظات: '+address+'\n';
 msg+='\nالأصناف:\n';
-cart.forEach((x,i)=>msg+=`${i+1}) ${x.name} × ${x.qty}\n`);
+cart.forEach((x,i)=>{
+  const isOffer = String(x.name).includes('🔥 عرض - ') || String(x.name).includes('عرض - ');
+  const displayName = isOffer ? x.name : x.name;
+  msg += `${i+1}) ${displayName} × ${x.qty}\n`;
+});
 msg+=`\nالإجمالي: ${total} ج.م`;
 
 window.open('https://wa.me/201064262660?text='+encodeURIComponent(msg),'_blank','noopener');
